@@ -1,0 +1,10 @@
+lightgbm
+tensorflow-gpu
+pandas
+numerapi
+matplotlib
+scikit-learn
+scipy
+cloudpickle==3.1.1
+pyarrow
+numerai-tools
