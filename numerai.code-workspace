@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "python.analysis.extraPaths": [
+            "./local",
+            "./colab"
+        ],
+        "files.exclude": {
+            "**/*.parquet": true,
+            "**/*.pkl": true,
+            "**/*.h5": true,
+            "**/.git": true
+        }
+    }
+}

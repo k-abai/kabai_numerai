@@ -1,6 +1,6 @@
 lightgbm
-tensorflow-gpu
-pandas
+tensorflow
+pandas==2.2.2
 numerapi
 matplotlib
 scikit-learn

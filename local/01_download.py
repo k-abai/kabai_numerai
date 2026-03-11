@@ -5,11 +5,11 @@ from numerapi import NumerAPI
 
 def main():
     parser = argparse.ArgumentParser(description="Numerai Data Download")
-    parser.add_argument("--size", choices=["small", "medium", "all"], default="all", help="Data size to use (small, medium, all)")
+    parser.add_argument("--version", choices=["v5.2", "v5.1", "v5.0"], default="v5.2", help="Data version (v5.2, v5.1, etc.)")
     args = parser.parse_args()
 
     napi = NumerAPI()
-    DATA_VERSION = "v5.2"
+    DATA_VERSION = args.version
 
     print(f"Downloading features metadata for version {DATA_VERSION}...")
     napi.download_dataset(f"{DATA_VERSION}/features.json")
@@ -17,14 +17,13 @@ def main():
     with open(f"{DATA_VERSION}/features.json") as f:
         feature_metadata = json.load(f)
 
-    feature_cols = feature_metadata["feature_sets"][args.size]
+    feature_cols = feature_metadata["feature_sets"]
     target_cols = feature_metadata["targets"]
 
-    print(f"Data size selected: {args.size} ({len(feature_cols)} features)")
+    print(f"Data: {DATA_VERSION} ({len(feature_cols)} features)")
     
     config = {
         "DATA_VERSION": DATA_VERSION,
-        "feature_size": args.size,
         "num_features": len(feature_cols),
         "target_cols": target_cols
     }

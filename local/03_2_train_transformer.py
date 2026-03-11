@@ -74,11 +74,20 @@ def main():
     
     train = pd.read_parquet(f"{DATA_VERSION}/train.parquet", columns=["era"] + feature_cols + ["target"])
     model = create_transformer_model(len(feature_cols))
-    model.fit(train[feature_cols].values.astype(np.float32), train["target"].values.astype(np.float32), epochs=20, batch_size=256, verbose=1)
-    
+    #model.fit(train[feature_cols].values.astype(np.float32), train["target"].values.astype(np.float32), epochs=20, batch_size=256, verbose=1)
+    x_train = train[feature_cols].values.astype(np.float32)
+    y_train = train["target"].values.astype(np.float32)
+
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    train_ds = train_ds.shuffle(10000, reshuffle_each_iteration=True)
+    train_ds = train_ds.batch(256)
+    train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
+
+    model.fit(train_ds, epochs=20, verbose=1)
+
     if not os.path.exists("local/models"): os.makedirs("local/models")
-    model.save("local/models/transformer_model.h5")
-    print("Final Transformer model saved to local/models/transformer_model.h5")
+    model.save("local/models/transformer_model.keras")
+    print("Final Transformer model saved to local/models/transformer_model.keras")
 
 if __name__ == "__main__":
     main()

@@ -45,8 +45,8 @@ def main():
     final_model.fit(train[feature_cols], train["target"], epochs=args.epochs, batch_size=256, verbose=1)
     
     if not os.path.exists("local/models"): os.makedirs("local/models")
-    final_model.save("local/models/nn_model.h5")
-    print("Final NN model saved to local/models/nn_model.h5")
+    final_model.save("local/models/nn_model.keras")
+    print("Final NN model saved to local/models/nn_model.keras")
 
 if __name__ == "__main__":
     main()
