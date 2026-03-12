@@ -21,12 +21,7 @@ def main():
     napi.download_dataset(f"{DATA_VERSION}/validation.parquet")
 
     with open(f"{DATA_VERSION}/features.json") as f: feature_metadata = json.load(f)
-    if args.size == "small":
-        feature_cols = feature_metadata["feature_sets"]["small"]
-    elif args.size == "medium":
-        feature_cols = feature_metadata["feature_sets"]["medium"]
-    else:
-        feature_cols = feature_metadata["feature_sets"]["all"] # Use all features for validation
+    feature_cols = feature_metadata["feature_sets"][args.size]
 
     validation = pd.read_parquet(f"{DATA_VERSION}/validation.parquet", columns=["era", "data_type", "target"] + feature_cols)
     validation = validation[validation["data_type"] == "validation"]
