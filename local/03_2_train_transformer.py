@@ -50,12 +50,12 @@ class TransformerEncoderBlock(layers.Layer):
 
 def create_transformer_model(num_features):
     inputs = layers.Input(shape=(num_features,))
-    x = FeatureEmbedding(128)(inputs)
-    pos_encoding = tf.Variable(tf.random.normal([1, num_features, 128], stddev=0.02), trainable=True)
+    x = FeatureEmbedding(64)(inputs)
+    pos_encoding = tf.Variable(tf.random.normal([1, num_features, 64], stddev=0.02), trainable=True)
     x = x + pos_encoding
-    for _ in range(2): x = TransformerEncoderBlock(128, 4, 256, 0.1)(x)
+    for _ in range(2): x = TransformerEncoderBlock(64, 4, 128, 0.1)(x)
     x = layers.GlobalAveragePooling1D()(x)
-    x = layers.Dense(64, activation='relu')(x)
+    x = layers.Dense(32, activation='relu')(x)
     x = layers.Dropout(0.1)(x)
     outputs = layers.Dense(1)(x)
     model = models.Model(inputs=inputs, outputs=outputs)
@@ -79,8 +79,8 @@ def main():
     y_train = train["target"].values.astype(np.float32)
 
     train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-    train_ds = train_ds.shuffle(10000, reshuffle_each_iteration=True)
-    train_ds = train_ds.batch(256)
+    train_ds = train_ds.shuffle(5000, reshuffle_each_iteration=True)
+    train_ds = train_ds.batch(128)
     train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
 
     model.fit(train_ds, epochs=20, verbose=1)

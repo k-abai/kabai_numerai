@@ -5,6 +5,6 @@ numerapi
 matplotlib
 scikit-learn
 scipy
-cloudpickle==3.1.1
+cloudpickle==2.2.1
 pyarrow
 numerai-tools

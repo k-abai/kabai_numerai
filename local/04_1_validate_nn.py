@@ -63,6 +63,9 @@ def main():
         .mean(axis=1)
     )
 
+    # Rank LGBM ensemble predictions per era before ensembling with NN to put them on the same scale
+    validation["prediction_lgbm_ensemble"] = validation.groupby("era")["prediction_lgbm_ensemble"].rank(pct=True)
+
     # NN prediction
     validation["prediction_nn"] = final_model.predict(
         validation[feature_cols].values.astype(np.float32),
