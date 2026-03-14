@@ -162,5 +162,9 @@ local_cli/config.json
 v5.2/
 v4.3/
 
-#writing
+# Writing
 medium/
+
+# Ignore results and plots
+*.png
+*.csv

@@ -13,12 +13,18 @@ from tensorflow.keras import layers, models
 # (Include custom layers FeatureEmbedding, TransformerEncoderBlock here)
 def create_transformer_model(num_features):
     inputs = layers.Input(shape=(num_features,))
-    x = FeatureEmbedding(128)(inputs)
-    pos_encoding = tf.Variable(tf.random.normal([1, num_features, 128], stddev=0.02), trainable=True)
+    x = FeatureEmbedding(32)(inputs)
+    pos_encoding = tf.Variable(tf.random.normal([1, num_features, 32], stddev=0.02), trainable=True)
     x = x + pos_encoding
-    for _ in range(2): x = TransformerEncoderBlock(128, 4, 256, 0.1)(x)
+    
+    # ALBERT-style: Shared parameters across layers
+    # Linformer-style: k=32 bottleneck for attention
+    shared_encoder = TransformerEncoderBlock(32, 2, 64, 0.1, k=32)
+    for _ in range(4): # Increased depth but shared parameters
+        x = shared_encoder(x)
+        
     x = layers.GlobalAveragePooling1D()(x)
-    x = layers.Dense(64, activation='relu')(x)
+    x = layers.Dense(32, activation='relu')(x)
     x = layers.Dropout(0.1)(x)
     outputs = layers.Dense(1)(x)
     model = models.Model(inputs=inputs, outputs=outputs)
@@ -66,8 +72,14 @@ def main():
     nn_model = tf.keras.models.load_model("local/models/nn_model.keras", compile=False)
     print("Loading transformer model...")
 
-    final_model = create_transformer_model(len(feature_cols))
-    final_model.load_weights("local/models/transformer_model.h5")
+    final_model = tf.keras.models.load_model(
+        "local/models/transformer_model.keras",
+        compile=False,
+        custom_objects={
+            "FeatureEmbedding": FeatureEmbedding,
+            "TransformerEncoderBlock": TransformerEncoderBlock,
+        },
+    )
 
     print("Transformer model loaded.")
     print("Models loaded. Generating predictions and evaluating...")
@@ -119,9 +131,9 @@ def main():
 
     # Final combined ensemble
     validation["prediction"] = (
-        0.25 * ranked["prediction_lgbm_ensemble"] +
-        0.25 * ranked["prediction_nn"] +
-        0.5 * ranked["prediction_transformer"]
+        0.4 * ranked["prediction_lgbm_ensemble"] +
+        0.2 * ranked["prediction_nn"] +
+        0.4 * ranked["prediction_transformer"]
     )
 
     # Feature neutralize
