@@ -84,10 +84,14 @@ def main():
 
     # Final combined ensemble
     validation["prediction"] = (
-        0.75 * ranked["prediction_lgbm_ensemble"] +
-        0.25 * ranked["prediction_nn"]
+        0.8 * ranked["prediction_lgbm_ensemble"] +
+        0.2 * ranked["prediction_nn"]
     )
-    
+
+    # Feature neutralize
+    validation["prediction"] = neutralize(
+        validation[["prediction"]], validation[feature_cols], proportion=0.01)["prediction"]
+
     # final rerank
     validation["prediction"] = validation.groupby("era")["prediction"].rank(pct=True)
 

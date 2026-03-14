@@ -43,6 +43,7 @@ def main():
 
     lgbm_weight = args.weights[0]
     nn_weight = args.weights[1]
+    tran_weight = 1 - lgbm_weight - nn_weight
     # Split targets and filter out empty strings
     requested_targets = [t.strip() for t in args.target.split(",") if t.strip()]
 
@@ -91,6 +92,8 @@ def main():
             batch_size=1024,
             verbose=0
         ).reshape(-1)
+        
+        # Rank NN predictions
         nn_rank = pd.Series(nn_pred, index=live_features.index).rank(pct=True)
 
         # 3. Optional Transformer (Commented Out)
@@ -98,7 +101,7 @@ def main():
         # trans_rank = pd.Series(trans_pred, index=live_features.index).rank(pct=True)
 
         # Final Weighted Blend
-        ensemble = (lgbm_weight * lgbm_ensemble_rank) + (nn_weight * nn_rank)
+        ensemble = (lgbm_weight * lgbm_ensemble_rank) + (nn_weight * nn_rank) # + (tran_weight * trans_rank)
         
         # Final ranked submission
         submission = ensemble.rank(pct=True, method="first")

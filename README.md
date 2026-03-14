@@ -20,7 +20,7 @@ Self-contained project for training and submitting models to Numerai.
    ```bash
    python local/03_0_train_lgbm.py --size medium
    python local/03_1_train_nn.py --size medium
-   python local/03_2_train_transformer.py --size medium
+   python local/03_2_train_transformer.py --size medium --memory low  
    ```
 4. Validate models:
    It is important to use the same size for validation used in training per model.

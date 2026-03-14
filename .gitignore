@@ -155,8 +155,12 @@ cython_debug/
 *.json
 *.pkl
 *.h5
+*.keras
 logs/
 local_cli/models/
 local_cli/config.json
 v5.2/
 v4.3/
+
+#writing
+medium/

@@ -87,6 +87,8 @@ def main():
         .rank(pct=True)
         .mean(axis=1)
     )
+    # Rank LGBM ensemble predictions per era before ensembling with NN to put them on the same scale
+    validation["prediction_lgbm_ensemble"] = validation.groupby("era")["prediction_lgbm_ensemble"].rank(pct=True)
 
     # NN prediction
     validation["prediction_nn"] = nn_model.predict(
@@ -121,7 +123,11 @@ def main():
         0.25 * ranked["prediction_nn"] +
         0.5 * ranked["prediction_transformer"]
     )
-    
+
+    # Feature neutralize
+    validation["prediction"] = neutralize(
+        validation[["prediction"]], validation[feature_cols], proportion=0.01)["prediction"]
+
     # Rank final prediction per era
     validation["prediction"] = validation.groupby("era")["prediction"].rank(pct=True)
 
