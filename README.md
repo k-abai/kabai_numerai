@@ -1,6 +1,6 @@
 # Numerai Model Training Project
 
-Self-contained project for training and submitting models to Numerai.
+Self-contained project for training and submitting models to Numerai. Numerai's large tabular data and high model density makes creating a competitive model much more difficult then percieved. This gets even more difficult with limited compute. This module seeks to address the issue by utilizing an ensemble of known and more novel techniques optimized for local hosting, low compute enviroments, with scalable capabilties to generate orthogonal alpha and reduce risk.
 
 ## Project Structure
 - `colab/`: Scripts optimized for Google Colab (TPU/GPU support).
