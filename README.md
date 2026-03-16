@@ -38,3 +38,27 @@ Use and modify the explore scipt to find correlations and explore auzilery targe
 
 ## Development
 This project was migrated from a playground environment and follows modular design principles for easy experimentation.
+
+## MCP Agent Usage (Custom Scripted Agent)
+
+This project utilizes a **Custom Scripted Agent** architecture designed for scalability and minimal overhead. Instead of configuring multiple distinct agents, we use a single Claude Code context that delegates tasks to specialized markdown-based "mini-agents".
+
+### Why this approach?
+- **Scalability**: Add new capabilities by simply dropping a new `.md` script in the `agent/scripts/` folder.
+- **Unified Context**: No need to jump between multiple agent configurations.
+- **Customization**: Easily tweak prompts for specific workflows (like daily uploads or status checks) without re-configuring the entire agent.
+
+### Setup & Execution
+1. **API Keys**: Configure your Numerai keys in the `.env` file at the project root.
+   ```bash
+   NUMERAI_MCP_AUTH="Token YOUR_PUBLIC_KEY\$YOUR_PRIVATE_KEY"
+   ```
+2. **Launch**: Navigate to `agent/` and start Claude Code.
+3. **Command**: Initialize by telling Claude:
+   > "Read `claude.md` and [your task, e.g., 'run MCP setup' or 'do daily upload']"
+
+### Project Agent Structure
+- `agent/claude.md`: The master orchestrator prompt.
+- `agent/scripts/mcp_setup.md`: Automated MCP authentication and setup.
+- `agent/scripts/daily_upload.md`: Step-by-step PKL upload workflow.
+- `agent/scripts/check_status.md`: Performance and submission status queries.
