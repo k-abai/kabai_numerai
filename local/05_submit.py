@@ -7,11 +7,23 @@ import pickle
 import pandas as pd
 import numpy as np
 from numerapi import NumerAPI
-from model_defs.transformer_layers import FeatureEmbedding, TransformerEncoderBlock, create_transformer_model
+from model_defs.transformer_layers import FeatureEmbedding, TransformerEncoderBlock
 from tensorflow.keras import layers, models
 
 # (Include custom layers FeatureEmbedding, TransformerEncoderBlock here)
-
+def create_transformer_model(num_features):
+        inputs = layers.Input(shape=(num_features,))
+        x = FeatureEmbedding(128)(inputs)
+        pos_encoding = tf.Variable(tf.random.normal([1, num_features, 128], stddev=0.02), trainable=True)
+        x = x + pos_encoding
+        for _ in range(2): x = TransformerEncoderBlock(128, 4, 256, 0.1)(x)
+        x = layers.GlobalAveragePooling1D()(x)
+        x = layers.Dense(64, activation='relu')(x)
+        x = layers.Dropout(0.1)(x)
+        outputs = layers.Dense(1)(x)
+        model = models.Model(inputs=inputs, outputs=outputs)
+        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss='mse', metrics=['mae'])
+        return model
 # local/05_submit.py
 
 def main():
@@ -41,19 +53,19 @@ def main():
     nn_model = tf.keras.models.load_model("local/models/nn_model.keras", compile=False)
 
     # Commented out Transformer model for now
-    #print("Loading transformer model...") 
-    #transformer_model = tf.keras.models.load_model(
-    #    "local/models/transformer_model.keras",
-    #    compile=False,
-    #    custom_objects={
-    #        "FeatureEmbedding": FeatureEmbedding,
-    #        "TransformerEncoderBlock": TransformerEncoderBlock,
-    #    },
-    #)
+    print("Loading transformer model...") 
+    transformer_model = tf.keras.models.load_model(
+        "local/models/transformer_model.keras",
+        compile=False,
+        custom_objects={
+            "FeatureEmbedding": FeatureEmbedding,
+            "TransformerEncoderBlock": TransformerEncoderBlock,
+        },
+    )
 
     lgbm_weight = args.weights[0]
     nn_weight = args.weights[1]
-    #tran_weight = 1 - lgbm_weight - nn_weight
+    tran_weight = 1 - lgbm_weight - nn_weight
     # Split targets and filter out empty strings
     requested_targets = [t.strip() for t in args.target.split(",") if t.strip()]
 
@@ -107,11 +119,11 @@ def main():
         nn_rank = pd.Series(nn_pred, index=live_features.index).rank(pct=True)
 
         # 3. Optional Transformer (Commented Out)
-        # trans_pred = transformer_model.predict(X.values.astype(np.float32), batch_size=1024, verbose=0).reshape(-1)
-        # trans_rank = pd.Series(trans_pred, index=live_features.index).rank(pct=True)
+        trans_pred = transformer_model.predict(X.values.astype(np.float32), batch_size=1024, verbose=0).reshape(-1)
+        trans_rank = pd.Series(trans_pred, index=live_features.index).rank(pct=True)
 
         # Final Weighted Blend
-        ensemble = (lgbm_weight * lgbm_ensemble_rank) + (nn_weight * nn_rank) #+ (tran_weight * trans_rank)
+        ensemble = (lgbm_weight * lgbm_ensemble_rank) + (nn_weight * nn_rank) + (tran_weight * trans_rank)
         
         # Final ranked submission
         submission = ensemble.rank(pct=True, method="first")

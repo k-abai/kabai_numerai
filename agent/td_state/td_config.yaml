@@ -1,0 +1,31 @@
+# TD(0) Research Agent Configuration
+# -----------------------------------
+
+# Learning parameters
+alpha: 0.10      # learning rate — conservative for noisy Numerai signals
+gamma: 0.90      # discount — slightly below 1 to prefer faster improvements
+
+# Reward weights (alpha terms sum to 0.90, risk penalties sum to -0.10)
+reward_weights:
+  sharpe:         0.30
+  corr20v2:       0.25
+  fncv3:          0.25
+  tbmc:           0.10
+  feat_exposure:  -0.05
+  max_drawdown:   -0.05
+
+# Acceptance gates
+acceptance:
+  min_sharpe:      1.20
+  min_fncv3:       0.0190
+  max_feat_exp:    0.30
+  max_drawdown:   -0.175
+  min_reward:      0.005
+
+# Ensemble constraints
+ensemble:
+  min_weight_per_model: 0.10   # no single model below 10%
+  max_shift_per_step:   0.10   # max +/- 10% per action A1
+
+# Future: TD(lambda) upgrade
+# lambda: 0.7

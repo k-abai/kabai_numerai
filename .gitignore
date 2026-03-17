@@ -163,6 +163,16 @@ local_cli/config.json
 v5.2/
 v4.3/
 
+# Agent lab — experiment workspace (scratch artifacts)
+agent_lab/
+
+# TD state — mutable RL state (value table, logs, current state)
+# Config (td_config.yaml) and experiment_log.md ARE tracked for documentation
+agent/td_state/value_table.json
+agent/td_state/state_current.json
+agent/td_state/ensemble_weights.json
+agent/td_state/experiment_log.jsonl
+
 # Writing
 medium/
 
