@@ -76,6 +76,10 @@ giving you a dedicated workspace for research artifacts.
 | A6 — aux_target_swap  | Change auxiliary target then retrain                      | `local/02_explore.py`         |
 | A7 — blend_method     | Switch ensemble method: rank_avg → blend → stacking       | `local/04_*validate*.py`      |
 | A8 — no_op            | Log state and skip (current value near-optimal)           | (none)                        |
+| A9 — explore_aux_targets | Delegate: Find new aux targets correlated to main target| `exploratory_scientist.md`    |
+| A10 — explore_xgboost    | Delegate: Train and eval lightweight XGBoost baseline   | `exploratory_scientist.md`    |
+| A11 — explore_rf         | Delegate: Train and eval lightweight Random Forest base | `exploratory_scientist.md`    |
+| A12 — explore_pcr        | Delegate: Train and eval lightweight PCR baseline       | `exploratory_scientist.md`    |
 
 ## Reward Formula R(t)
 ```
@@ -104,9 +108,11 @@ state_key = hash(model_weights_binned, feature_set, aux_target, ensemble_method)
 ## Hard constraints (never violate):
 - NEVER submit to Numerai without explicit human approval.
 - NEVER use in-sample (training) scores as R(t).
+- NEVER overwrite old .pkl files not created by the agent 
 - NEVER overwrite .pkl files if any acceptance gate fails.
 - NEVER shift any single model weight by more than 0.10 in one step.
 - ALWAYS log before mutating state.
+- ALWAYS create a new name for .pkl relevant to expirement.
 - ALWAYS store experiment artifacts in `agent_lab/exp_{run_id}/`.
 
 ## Experiment Log Format

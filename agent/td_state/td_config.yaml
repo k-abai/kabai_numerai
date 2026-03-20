@@ -26,6 +26,10 @@ acceptance:
 ensemble:
   min_weight_per_model: 0.10   # no single model below 10%
   max_shift_per_step:   0.10   # max +/- 10% per action A1
+  potential_models:            # dynamically tracked if validated
+    - xgboost
+    - rf
+    - pcr
 
 # Future: TD(lambda) upgrade
 # lambda: 0.7
